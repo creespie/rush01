@@ -7,9 +7,10 @@ void    check_missing(char array[4], char *missing)
      int    y;
      int    found;
      int    f;
+     int    amount;
 
+     amount = 0;
      i = 0;
-     y = 0;
      f = 0;
      compare[0] = '1';
      compare[1] = '2';
@@ -18,61 +19,51 @@ void    check_missing(char array[4], char *missing)
      while (i < 4)
      {
         found = 0;
+        y = 0;
         while (y < 4)
         {
-            if (array[i] == compare[y])
-                found++;
+            if (array[y] == compare[i])
+                found = 1;
             y++;
         }
         if (found == 0)
         {
-            missing[f] = array[i];
-            f++;  
+            amount++;
+            
+            missing[f] = compare[i];
+            if (amount > 2)
+                missing[1] = '5';
+            f++; 
         }
         i++;
     }
-     
+     missing[f] = '\0';
 }
 
 void    check_content(char **array,int x ,char *compare_line)
 {
-     char   compare[4];
-     int    i;
      int    y;
-     int    found;
-     int    f;
+     int    k;
 
-     i = 0;
+     k = 0;
      y = 0;
-     f = 0;
-     compare[0] = '1';
-     compare[1] = '2';
-     compare[2] = '3';
-     compare[3] = '4';
-     while (i < 4)
+     while (y < 4)
      {
-        found = 0;
-        while (y < 4)
+        if (array[y][x] != '0')
         {
-            if (array[i][x] == compare[y])
-                found++;
-            y++;
+            compare_line[k] = array[y][x];
+            k++;
         }
-        if (found == 1)
-        {
-            compare_line[f] = array[i];
-            f++;  
-        }
-        i++;
+        y++;
     }
-     
+     compare_line[k] = '\0';
 }
 
 
 void    sudoku(char **array)
 {
-    char    missing[2];
-    char    compare_line[3];
+    char    missing[3];
+    char    compare_line[4];
     int     x;
     int     y;
     int     i;
@@ -89,22 +80,29 @@ void    sudoku(char **array)
             {
                 i = 0;
                 check_missing(array[y], missing);
-                check_content(array, x, compare_line);
-                while (i < 2)
+                if (missing[1] == '5')
                 {
-                    n = 0;
-                    while (n < 3)
+                    continue;
+                }
+                else
+                {
+                    check_content(array, x, compare_line);
+                    while (i < 2)
                     {
-                        if (missing[i] == compare_line[n])
-                        {   
-                            if (i == 0)
-                                array[y][x] = missing[1];
-                            else
-                                array[y][x] = missing[0];
+                        n = 0;
+                        while (n < 3)
+                        {
+                            if (missing[i] == compare_line[n])
+                            {
+                                if (i == 0)
+                                    array[y][x] = missing[1];
+                                else
+                                    array[y][x] = missing[0];
+                            }
+                            n++;
                         }
-                        n++;
+                        i++;
                     }
-                    i++;
                 }
             }
             x++;
@@ -157,11 +155,13 @@ void    three_numbers(char **array)
             {
                 if (county[y] != '1')
                     coordy = y;
+                y++;
             }
             while (x < 4)
             {
                 if (countx[x] != '1')
                     coordx = x;
+                x++;
             }
             array[coordy][coordx] = c;
         }
